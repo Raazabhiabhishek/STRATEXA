@@ -1,18 +1,25 @@
-# STRATEXA
+# STRATEXA 🪖  
+### AI-Powered Strategic Decision Support System
 
-AI-Powered Strategic Decision Support System built using React, Node.js, and Python.
+## 🔗 Live Demo
+Frontend: https://<your-vercel-link>.vercel.app  
+Backend API: https://stratexa.onrender.com
 
-## Features
-- AI-based risk analysis
-- Dynamic decision dashboard
-- Interactive map with risk radius
-- Charts and visual indicators
 
-## Tech Stack
-- Frontend: React + Tailwind CSS
-- Backend: Node.js + Express
-- AI Engine: Python
-- Maps: OpenStreetMap + Leaflet
+STRATEXA is a **full-stack AI-based decision support system** designed to simulate strategic planning for defense-style operations.  
+It analyzes operational parameters and visually presents **risk assessment, analytics, and geospatial awareness** through an interactive dashboard.
 
-## Project Type
-Simulation-based full-stack AI system for decision support.
+---
+
+## 🚀 Key Features
+
+- 🧠 **AI Risk Analysis** based on terrain, weather, and threat level
+- 📊 **Dynamic Charts** for risk visualization
+- 🚦 **Color-coded Risk Indicators** (Low / Medium / High)
+- 🗺️ **Interactive Map** with AI-generated risk radius
+- ⚙️ **Full-Stack Architecture** with real backend–AI integration
+
+---
+
+## 🏗️ System Architecture
+
