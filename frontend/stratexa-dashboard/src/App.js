@@ -28,9 +28,9 @@ function App() {
   const [result, setResult] = useState(null);
 
   const analyzeDecision = async () => {
-    const response = await fetch(
-      "http://localhost:5000/api/decision/analyze",
-      {
+    const response = await 
+    fetch("https://stratexa.onrender.com/api/decision/analyze", {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ terrain, weather, threatLevel }),
