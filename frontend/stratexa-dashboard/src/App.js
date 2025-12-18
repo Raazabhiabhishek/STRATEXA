@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  useMapEvents,
+} from "react-leaflet";
+
 import "leaflet/dist/leaflet.css";
 
 import {
@@ -65,6 +73,18 @@ function App() {
       lng: e.latlng.lng,
     });
   };
+  function LocationSelector({ setLocation }) {
+  useMapEvents({
+    click(e) {
+      setLocation({
+        lat: e.latlng.lat,
+        lng: e.latlng.lng,
+      });
+    },
+  });
+  return null;
+}
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center">
@@ -188,33 +208,34 @@ function App() {
             </h2>
 
             <MapContainer
-              center={[location.lat, location.lng]}
-              zoom={6}
-              style={{ height: "300px", width: "100%" }}
-              className="rounded-lg"
-              whenCreated={(map) => {
-                map.on("click", handleMapClick);
-              }}
-            >
-              <TileLayer
-                attribution="&copy; OpenStreetMap contributors"
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
+  center={[location.lat, location.lng]}
+  zoom={6}
+  style={{ height: "300px", width: "100%" }}
+  className="rounded-lg"
+>
+  <TileLayer
+    attribution="&copy; OpenStreetMap contributors"
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  />
 
-              <Marker position={[location.lat, location.lng]}>
-                <Popup>Selected Operation Area</Popup>
-              </Marker>
+  {/* ✅ THIS IS THE FIX */}
+  <LocationSelector setLocation={setLocation} />
 
-              <Circle
-                center={[location.lat, location.lng]}
-                radius={getRiskStyle().radius}
-                pathOptions={{
-                  color: getRiskStyle().color,
-                  fillColor: getRiskStyle().color,
-                  fillOpacity: 0.3,
-                }}
-              />
-            </MapContainer>
+  <Marker position={[location.lat, location.lng]}>
+    <Popup>Selected Operation Area</Popup>
+  </Marker>
+
+  <Circle
+    center={[location.lat, location.lng]}
+    radius={getRiskStyle().radius}
+    pathOptions={{
+      color: getRiskStyle().color,
+      fillColor: getRiskStyle().color,
+      fillOpacity: 0.3,
+    }}
+  />
+</MapContainer>
+
           </div>
         )}
       </div>
