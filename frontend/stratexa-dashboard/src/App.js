@@ -20,17 +20,22 @@ ChartJS.register(
   Legend
 );
 
-
 function App() {
   const [terrain, setTerrain] = useState("plain");
   const [weather, setWeather] = useState("clear");
   const [threatLevel, setThreatLevel] = useState("low");
   const [result, setResult] = useState(null);
 
-  const analyzeDecision = async () => {
-    const response = await 
-    fetch("https://stratexa.onrender.com/api/decision/analyze", {
+  // ✅ NEW: Dynamic operation location
+  const [location, setLocation] = useState({
+    lat: 28.6139,
+    lng: 77.2090, // Default: Delhi
+  });
 
+  const analyzeDecision = async () => {
+    const response = await fetch(
+      "https://stratexa.onrender.com/api/decision/analyze",
+      {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ terrain, weather, threatLevel }),
@@ -39,30 +44,36 @@ function App() {
     const data = await response.json();
     setResult(data);
   };
+
   const getRiskStyle = () => {
-  if (!result) return { radius: 5000, color: "green" };
+    if (!result) return { radius: 5000, color: "green" };
 
-  switch (result.output.riskStatus) {
-    case "HIGH RISK":
-      return { radius: 20000, color: "red" };
-    case "MEDIUM RISK":
-      return { radius: 10000, color: "yellow" };
-    default:
-      return { radius: 5000, color: "green" };
-  }
-};
+    switch (result.output.riskStatus) {
+      case "HIGH RISK":
+        return { radius: 20000, color: "red" };
+      case "MEDIUM RISK":
+        return { radius: 10000, color: "yellow" };
+      default:
+        return { radius: 5000, color: "green" };
+    }
+  };
 
+  // ✅ NEW: Handle map click
+  const handleMapClick = (e) => {
+    setLocation({
+      lat: e.latlng.lat,
+      lng: e.latlng.lng,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center">
       <div className="w-full max-w-3xl bg-gray-800 rounded-xl shadow-lg p-8">
-        
         <h1 className="text-3xl font-bold text-center text-green-400 mb-6">
           STRATEXA Command Dashboard
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {/* Terrain */}
           <div>
             <label className="block mb-2 text-sm text-gray-300">Terrain</label>
             <select
@@ -75,7 +86,6 @@ function App() {
             </select>
           </div>
 
-          {/* Weather */}
           <div>
             <label className="block mb-2 text-sm text-gray-300">Weather</label>
             <select
@@ -88,7 +98,6 @@ function App() {
             </select>
           </div>
 
-          {/* Threat */}
           <div>
             <label className="block mb-2 text-sm text-gray-300">Threat Level</label>
             <select
@@ -110,105 +119,104 @@ function App() {
         </button>
 
         {result && (
-  <div className="mt-6 bg-gray-700 p-5 rounded-lg">
-    <h2 className="text-xl font-semibold text-green-400 mb-3">
-      AI Decision Output
-    </h2>
+          <div className="mt-6 bg-gray-700 p-5 rounded-lg">
+            <h2 className="text-xl font-semibold text-green-400 mb-3">
+              AI Decision Output
+            </h2>
 
-    <p className="mb-2">
-      <b>Risk Score:</b> {result.output.riskScore}
-    </p>
+            <p className="mb-2">
+              <b>Risk Score:</b> {result.output.riskScore}
+            </p>
 
-    <p className="mb-2">
-      <b>Status:</b>{" "}
-      <span
-        className={`px-3 py-1 rounded font-semibold ${
-          result.output.riskStatus === "HIGH RISK"
-            ? "bg-red-500 text-white"
-            : result.output.riskStatus === "MEDIUM RISK"
-            ? "bg-yellow-400 text-black"
-            : "bg-green-500 text-white"
-        }`}
-      >
-        {result.output.riskStatus}
-      </span>
-    </p>
+            <p className="mb-2">
+              <b>Status:</b>{" "}
+              <span
+                className={`px-3 py-1 rounded font-semibold ${
+                  result.output.riskStatus === "HIGH RISK"
+                    ? "bg-red-500 text-white"
+                    : result.output.riskStatus === "MEDIUM RISK"
+                    ? "bg-yellow-400 text-black"
+                    : "bg-green-500 text-white"
+                }`}
+              >
+                {result.output.riskStatus}
+              </span>
+            </p>
 
-    <p className="mt-3">
-      <b>Recommendation:</b> {result.output.recommendation}
-    </p>
-  </div>
-)}
-{result && (
-  <div className="mt-6 bg-gray-800 p-5 rounded-lg">
-    <h2 className="text-xl font-semibold text-green-400 mb-3">
-      Risk Analysis Chart
-    </h2>
+            <p className="mt-3">
+              <b>Recommendation:</b> {result.output.recommendation}
+            </p>
+          </div>
+        )}
 
-    <Bar
-      data={{
-        labels: ["Risk Score"],
-        datasets: [
-          {
-            label: "AI Risk Score",
-            data: [result.output.riskScore],
-            backgroundColor:
-              result.output.riskStatus === "HIGH RISK"
-                ? "rgba(239,68,68,0.8)"
-                : result.output.riskStatus === "MEDIUM RISK"
-                ? "rgba(250,204,21,0.8)"
-                : "rgba(34,197,94,0.8)",
-          },
-        ],
-      }}
-      options={{
-        responsive: true,
-        scales: {
-          y: {
-            min: 0,
-            max: 100,
-          },
-        },
-      }}
-    />
-  </div>
-)}
-{result && (
-  <div className="mt-6 bg-gray-800 p-5 rounded-lg">
-    <h2 className="text-xl font-semibold text-green-400 mb-3">
-      Operation Risk Zone
-    </h2>
+        {result && (
+          <div className="mt-6 bg-gray-800 p-5 rounded-lg">
+            <h2 className="text-xl font-semibold text-green-400 mb-3">
+              Risk Analysis Chart
+            </h2>
 
-    <MapContainer
-      center={[28.6139, 77.2090]}
-      zoom={6}
-      style={{ height: "300px", width: "100%" }}
-      className="rounded-lg"
-    >
-      <TileLayer
-        attribution="&copy; OpenStreetMap contributors"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+            <Bar
+              data={{
+                labels: ["Risk Score"],
+                datasets: [
+                  {
+                    label: "AI Risk Score",
+                    data: [result.output.riskScore],
+                    backgroundColor:
+                      result.output.riskStatus === "HIGH RISK"
+                        ? "rgba(239,68,68,0.8)"
+                        : result.output.riskStatus === "MEDIUM RISK"
+                        ? "rgba(250,204,21,0.8)"
+                        : "rgba(34,197,94,0.8)",
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                scales: {
+                  y: { min: 0, max: 100 },
+                },
+              }}
+            />
+          </div>
+        )}
 
-      <Marker position={[28.6139, 77.2090]}>
-        <Popup>Operation Area</Popup>
-      </Marker>
+        {result && (
+          <div className="mt-6 bg-gray-800 p-5 rounded-lg">
+            <h2 className="text-xl font-semibold text-green-400 mb-3">
+              Operation Risk Zone (Click Map to Select Area)
+            </h2>
 
-      <Circle
-        center={[28.6139, 77.2090]}
-        radius={getRiskStyle().radius}
-        pathOptions={{
-          color: getRiskStyle().color,
-          fillColor: getRiskStyle().color,
-          fillOpacity: 0.3,
-        }}
-      />
-    </MapContainer>
-  </div>
-)}
+            <MapContainer
+              center={[location.lat, location.lng]}
+              zoom={6}
+              style={{ height: "300px", width: "100%" }}
+              className="rounded-lg"
+              whenCreated={(map) => {
+                map.on("click", handleMapClick);
+              }}
+            >
+              <TileLayer
+                attribution="&copy; OpenStreetMap contributors"
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
 
+              <Marker position={[location.lat, location.lng]}>
+                <Popup>Selected Operation Area</Popup>
+              </Marker>
 
-
+              <Circle
+                center={[location.lat, location.lng]}
+                radius={getRiskStyle().radius}
+                pathOptions={{
+                  color: getRiskStyle().color,
+                  fillColor: getRiskStyle().color,
+                  fillOpacity: 0.3,
+                }}
+              />
+            </MapContainer>
+          </div>
+        )}
       </div>
     </div>
   );
